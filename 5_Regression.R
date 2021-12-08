@@ -126,7 +126,7 @@ df$P<-sapply(models, function(x){
   summary(x)$fstatistic %>% 
     {unname(pf(.[1],.[2],.[3],lower.tail=F))}})
 
-df<-left_join(df,as.data.frame(aic)%>%select(Modnames,Delta_AICc),
+df<-left_join(df,as.data.frame(aic)%>%dplyr::select(Modnames,Delta_AICc),
               by=c("Model"="Modnames"))
 df<-df%>%
   mutate(across(-c("Model","P"), round, 4))%>%
@@ -134,7 +134,7 @@ df<-df%>%
     P<0.05~"<0.05",
     P>=0.05~as.character(P)
   ))%>%
-  select(-P)%>%
+  dplyr::select(-P)%>%
   rename(Delta.AIC=Delta_AICc)%>%
   arrange(Delta.AIC)
 
@@ -188,7 +188,7 @@ df.pc$P<-sapply(models, function(x){
   summary(x)$fstatistic %>% 
     {unname(pf(.[1],.[2],.[3],lower.tail=F))}})
 
-df.pc<-left_join(df.pc,as.data.frame(aic.pc)%>%select(Modnames,Delta_AICc),
+df.pc<-left_join(df.pc,as.data.frame(aic.pc)%>%dplyr::select(Modnames,Delta_AICc),
               by=c("Model"="Modnames"))
 df.pc<-df.pc%>%
   mutate(across(-c("Model","P"), round, 4))%>%
@@ -196,7 +196,7 @@ df.pc<-df.pc%>%
     P<0.05~"<0.05",
     P>=0.05~as.character(P)
   ))%>%
-  select(-P)%>%
+  dplyr::select(-P)%>%
   rename(Delta.AIC=Delta_AICc)%>%
   arrange(Delta.AIC)
 
@@ -253,7 +253,7 @@ df.patterns$P<-sapply(models, function(x){
   summary(x)$fstatistic %>% 
     {unname(pf(.[1],.[2],.[3],lower.tail=F))}})
 
-df.patterns<-left_join(df.patterns,as.data.frame(aic.patterns)%>%select(Modnames,Delta_AICc),
+df.patterns<-left_join(df.patterns,as.data.frame(aic.patterns)%>%dplyr::select(Modnames,Delta_AICc),
                  by=c("Model"="Modnames"))
 df.patterns<-df.patterns%>%
   mutate(across(-c("Model","P"), round, 4))%>%
@@ -261,7 +261,7 @@ df.patterns<-df.patterns%>%
     P<0.05~"<0.05",
     P>=0.05~as.character(P)
   ))%>%
-  select(-P)%>%
+  dplyr::select(-P)%>%
   rename(Delta.AIC=Delta_AICc)%>%
   arrange(Delta.AIC)
 

@@ -1,9 +1,5 @@
 library(tidyverse)
-#library(viridis)
-#library(colortools)
-#library(ggplotify)
 library(patchwork)
-#library(vcd)
 
 memory.limit(100000)
 
