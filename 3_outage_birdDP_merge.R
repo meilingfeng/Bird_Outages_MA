@@ -22,7 +22,7 @@ outs2<- outs%>%
   mutate(date=mdy(Date.Out),
          week=week(date),
          year=year(date))%>%
-  select(-Date.Out)%>%
+  dplyr::select(-Date.Out)%>%
   
   #b) Calculate SAIDI, Customer Outage Minutes per incident
   #NCOH = (# customers affected * outage duration)/ total customers served (households)
@@ -32,7 +32,7 @@ outs2<- outs%>%
          hh_cust_flag=ifelse(hh_total<Original.Number.Customers.Affected,1,0))%>%
   #remove flagged records
     filter(hh_cust_flag!=1)%>%
-  select(-hh_cust_flag)%>%
+  dplyr::select(-hh_cust_flag)%>%
   group_by(actual_city_town,week,year)%>%
   
   #d) aggregate SAIDI per town/week
@@ -78,9 +78,9 @@ outs2<- outs%>%
     #list species 4 letter codes
   colnames<-toupper(name_list$sp_file)
     #grab non-species time-town variables
-  dp_towns2<-select(dp_towns[[1]],-eBird.DP.RF)
+  dp_towns2<-dplyr::select(dp_towns[[1]],-eBird.DP.RF)
     #Grab all the species detection probabilities
-  dp_towns<-lapply(dp_towns,function(x){select(x,"eBird.DP.RF")})
+  dp_towns<-lapply(dp_towns,function(x){dplyr::select(x,"eBird.DP.RF")})
     #column bind them
   dp_towns<-bind_cols(dp_towns)
     #Name them as their species codes
