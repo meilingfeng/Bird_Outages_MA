@@ -1,16 +1,12 @@
 library(lubridate)
 library(sf)
-#library(gridExtra)
 library(tidyverse)
-#library(arm)
-#library(caret)
-#library(zoo)
-#library(ggpmisc)
 library(exactextractr)
-#library(verification)
+
 
 #NLCD Land cover data
 load("Objects and Data/0_MA_town_shapefiles.rda")
+ma_towns<-ma_towns[!duplicated(ma_towns$city),]
 load("Objects and Data/1_landcover_rasters.rda")
 load("Objects and Data/1_elevation_raster.rda")
 
@@ -66,7 +62,7 @@ calculate_pland <- function(yr, regions, lc) {
 
 # iterate over years, extracting area of each land cover type in each town
 lc_extract <- town_year %>% 
-  mutate(pland = map2(year_lc, data, calculate_pland, lc = landcover)) %>% 
+  dplyr::mutate(pland = map2(year_lc, data, calculate_pland, lc = landcover)) %>% 
   dplyr::select(pland) %>% 
   unnest(cols = pland)
 
