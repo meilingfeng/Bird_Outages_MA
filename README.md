@@ -6,3 +6,6 @@ The original bird abundance data comes from the eBird Basic Dataset (May 2020) a
 
 
 To run the analysis and generate figures, download the entire R project and run the 0_main.R script.
+
+Please cite the data and figures used in this analysis as the following:
+Feng, M.-L.E., Owolabi, O.O., Schafer, L.J., Sengupta, S., Wang, L., Matteson, D.S., Che-Castaldo, J.P., and Sunter, D.A. 2021. Informing data-driven analyses of animal-related electric outages using species distribution models and community science data [Manuscript Submitted for Publication]. 
