@@ -5,7 +5,7 @@ The original outage data comes from Eversource Energy, National Grid, and Unitil
 The original bird abundance data comes from the eBird Basic Dataset (May 2020) and the modeled relative abundance estimates for Massachusetts towns are also available on the IRI Data Library at http://iridl.ldeo.columbia.edu/SOURCES/.PRISM/.eBird/.derived/.detectionProbability/.
 
 
-To run the analysis and generate figures, download the entire R project and run the 0_main.R script.
+To run the analysis and generate figures, download Bird_Outages_MA, create a new R project in the Bird_Outages_MA folder, and run the 0_Main.R script. 0_Main.R sources the scripts for each part of the analysis and figure generation.
 
 Please cite the data and figures used in this analysis as the following:
 Feng, M.-L.E., Owolabi, O.O., Schafer, L.J., Sengupta, S., Wang, L., Matteson, D.S., Che-Castaldo, J.P., and Sunter, D.A. 2021. Informing data-driven analyses of animal-related electric outages using species distribution models and community science data [Manuscript Submitted for Publication]. 
