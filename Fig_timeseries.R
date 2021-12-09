@@ -44,9 +44,10 @@ p4<-ggplot(data = summ4%>%filter(measure%in%g3), aes(x=week, y=mean,group=measur
   theme_bw(base_size = 12)+
   scale_x_continuous(breaks=seq(1,max(summ3$week),5))+
   guides(color=FALSE)+
-  labs(x="Week of the Year", y="Average Detection Probability",
+  labs(x="Week of the Year", y="Mean Detection Probability",
        fill="Species",title="A")+
-  theme(axis.title.x = element_blank())
+  theme(axis.title.x = element_blank(),
+        axis.title.y = element_blank())
 
 p5<-ggplot(data = summ4%>%filter(measure%in%g2), aes(x=week, y=mean,group=measure)) +
   geom_line(aes(color=measure)) +
@@ -54,7 +55,7 @@ p5<-ggplot(data = summ4%>%filter(measure%in%g2), aes(x=week, y=mean,group=measur
   theme_bw(base_size = 12)+
   scale_x_continuous(breaks=seq(1,max(summ3$week),5))+
   guides(color=FALSE)+
-  labs(x="Week of the Year", y="Average Detection Probability",
+  labs(x="Week of the Year", y="Mean Detection Probability",
        fill="Species",title="B") +
   theme(axis.title.x = element_blank())
 
@@ -64,5 +65,6 @@ p6<-ggplot(data = summ4%>%filter(measure%in%g1), aes(x=week, y=mean,group=measur
   theme_bw(base_size = 12)+
   scale_x_continuous(breaks=seq(1,max(summ3$week),5))+
   guides(color=FALSE)+
-  labs(x="Week of the Year", y="Average Detection Probability",
-       fill="Species",title="C") 
+  labs(x="Week of the Year", y="Mean Detection Probability",
+       fill="Species",title="C") +
+  theme(axis.title.y = element_blank())
