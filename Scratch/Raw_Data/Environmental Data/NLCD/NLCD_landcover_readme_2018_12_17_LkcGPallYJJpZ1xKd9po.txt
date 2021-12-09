@@ -1,4 +1,0 @@
-Additional landcover files
-
-1) NLCD_landcover_legend.csv - This csv contains landcover values and corresponding landcover classes.
-2) NLCD_landcover_layer.lyr - An ESRI Layerfile (generated with ArcMap version 10.6). This can be used to apply the standard NLCD color map to your landcover image by opening in ArcMap.  To import, open the landcover tiff of your area.  Right click on your landcover and select properties.  Under layer properties, select the symbology tab.  Click on Unique values under the "Show" heading to the left.  Click "yes" when asked if you want to create a raster attribute table.  After that completes, go to open symbology folder icon in the upper right corner and select the NLCD_landcover_layer.lyr file.  This will add class descriptions for your downloaded area.  
