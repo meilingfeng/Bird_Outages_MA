@@ -3,6 +3,7 @@ library(tidyverse)
 
 
 load("Objects and Data/4_dp_outs_towns.rda")
+load("Objects and Data/2_habitat_elev_year_MAtowns.rda")
 load("Objects and Data/0_MA_town_shapefiles.rda")
 ma_towns<-ma_towns[!duplicated(ma_towns$city),]
 load("Objects and Data/0_species_list.rda")
@@ -41,8 +42,7 @@ p1<-ggplot() +
         strip.text = element_text(size=10),
         strip.background = element_rect(color="black", fill="white", size=1.5,
                                         linetype="blank"))+
-  guides(fill=guide_colourbar(barwidth=0.7))+
-  labs(title="A")
+  guides(fill=guide_colourbar(barwidth=0.7))
 
 #Group2
 p2<-ggplot() +
@@ -61,8 +61,7 @@ p2<-ggplot() +
         strip.text = element_text(size=10),
         strip.background = element_rect(color="black", fill="white", size=1.5,
                                         linetype="blank"))+
-  guides(fill=guide_colourbar(barwidth=0.7))+
-  labs(title="B")
+  guides(fill=guide_colourbar(barwidth=0.7))
 
 #Group3
 p3<-ggplot() +
@@ -81,8 +80,7 @@ p3<-ggplot() +
         strip.text = element_text(size=10),
         strip.background = element_rect(color="black", fill="white", size=1.5,
                                         linetype="blank"))+
-  guides(fill=guide_colourbar(barwidth=0.7))+
-  labs(title="C")
+  guides(fill=guide_colourbar(barwidth=0.7))
 
 
 p_map<-ggplot() +
@@ -102,3 +100,33 @@ p_map<-ggplot() +
         strip.background = element_rect(color="black", fill="white", size=1.5,
                                         linetype="blank"))+
   guides(fill=guide_colourbar(barwidth=0.7))
+
+
+
+#Map of dominant land cover types (type with max land cover proportion) in each town
+pland_towns<-pland_elev_towns%>%
+  pivot_longer(-c("year","city","TOWN_ID","Area_km2","county","elevation_median","elevation_sd"),
+               "type")%>%
+  filter(year==2018)%>%
+  group_by(city)%>%
+  filter(value==max(value))%>%
+  filter(!duplicated(city))%>%
+  ungroup()%>%
+  right_join(ma_towns)
+
+unique(pland_towns$type)
+
+lc_map<-ggplot() +
+  geom_sf(data = pland_towns, aes(geometry=geometry,fill = type)) +
+  scale_fill_manual(values = c("Developed"="darkred","Forest"="forestgreen","Open_Water"="steelblue4",
+                    "Wetland"="steelblue1","Cultivated_Crops"="goldenrod"))+
+  theme_bw()+
+  theme(legend.title = element_text(size = 10), 
+        legend.text = element_text(size = 10),
+        axis.text.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks = element_blank(),
+        axis.line = element_blank())+
+  #guides(fill=guide_legend(override.aes = list(size = 5)))+
+  labs(fill="Dominant Land\n Cover Type")
+
