@@ -85,7 +85,7 @@ p3<-ggplot() +
 
 p_map<-ggplot() +
   #specify Bird Species
-  geom_sf(data = towns_birds%>%filter(Species%in%c("TUVU","EUST")), aes(geometry=geometry,fill = DP)) +
+  geom_sf(data = towns_birds%>%filter(Species%in%c("PIWO","NOFL")), aes(geometry=geometry,fill = DP)) +
   scale_fill_viridis_c(option = "plasma",
                        na.value = "grey60")+
   facet_wrap(~Species,ncol = 2)+
