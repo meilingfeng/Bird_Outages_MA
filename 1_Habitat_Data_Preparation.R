@@ -20,8 +20,8 @@ time<-c(2005:2018)
 #Summarize the proportion of habitat/land cover within each town
 
 #get land cover data from NLCD, CONUS 2006-2016
-#Go to NLCD and download land cover layers for 2006-2016,
-#https://www.mrlc.gov/data?f%5B0%5D=category%3ALand%20Cover&f%5B1%5D=region%3Aconus
+#Go to NLCD and download land cover layers for 2006-2016 (select all years),
+#https://www.mrlc.gov/viewer/
 #Add downloaded .tiff raster files to a subfolder in the Bird_Outages_MA directory
 #.>Scratch>Raw_Data>Environmental Data/NLCD
 
