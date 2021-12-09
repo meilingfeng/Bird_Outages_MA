@@ -7,20 +7,29 @@ library(exactextractr)
 #NLCD Land cover data
 load("Objects and Data/0_MA_town_shapefiles.rda")
 ma_towns<-ma_towns[!duplicated(ma_towns$city),]
-load("Objects and Data/1_landcover_rasters.rda")
-load("Objects and Data/1_elevation_raster.rda")
 
 #-------------------------------------
 #PREPARING ENVIRONMENTAL COVARIATES
 #-------------------------------------
 
+#specify time range
+time<-c(2005:2018)
 
 #Land cover/habitat
 #--------------------------------------------------------------------------------------------
 #Summarize the proportion of habitat/land cover within each town
 
-#specify time range
-time<-c(2005:2018)
+#get land cover data from NLCD, CONUS 2006-2016
+#Go to NLCD and download land cover layers for 2006-2016,
+#https://www.mrlc.gov/data?f%5B0%5D=category%3ALand%20Cover&f%5B1%5D=region%3Aconus
+#Add downloaded .tiff raster files to a subfolder in the Bird_Outages_MA directory
+#.>Scratch>Raw_Data>Environmental Data/NLCD
+
+grids <- list.files("Scratch/Raw_Data/Environmental Data/NLCD" , pattern = "*.tiff$")
+
+#create a raster stack from the input raster files 
+landcover <- raster::stack(paste0("Scratch/Raw_Data/Environmental Data/NLCD/", grids[-8]))
+
 
 # label land cover layers with their year
 landcover <- names(landcover) %>% 
@@ -129,6 +138,18 @@ pland3 <- pland2 %>%
 
 #Elevation
 #--------------------------------------------------------------------------------------------
+#Download 1km elevation data from Amatulli et al 2018
+#http://www.earthenv.org/topography 
+#Add downloaded .tif raster files to a subfolder in the Bird_Outages_MA directory
+#.>Scratch>Raw_Data>Environmental Data/Elevation
+elev <- raster::raster("Raw_Data/Environmental Data/Elevation/elevation_1KMmd_GMTEDmd.tif")
+
+# crop raster to town shapefile
+elev <- ma_towns %>% 
+  st_transform(crs = raster::projection(elev)) %>% 
+  raster::crop(elev, .) %>% 
+  raster::projectRaster(crs = raster::projection(landcover))
+
 # extract elevation values and calculate median and sd
 ma_towns_elev<-ma_towns
 elev_towns <- exact_extract(elev, ma_towns_elev, progress = FALSE) %>% 
