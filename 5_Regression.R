@@ -10,9 +10,7 @@ load("Objects and Data/0_species_list.rda")
 dp<-dp_outs_towns%>%
   #remove missing data
   filter(saidi!=0 & !(is.na(RWBL)))%>%
-  #log-transform SAIDI
-  mutate(log_saidi=log(saidi),
-         week=as.factor(week),
+  mutate(week=as.factor(week),
          year=as.factor(year),
          month=as.factor(month))
 
@@ -205,6 +203,9 @@ write.csv(df.pc,"Outputs/species_subset_models.csv",row.names = F)
 #Multispecies model is the best
 #Bird outages seem most correlated with activity levels of spring/fall migrants
 
+sth.res = resid(m.sth)
+hist(sth.res)
+
 
 #3. Compare species*habitat*time models using subsets of data in each season (remove month)
 #and in forest vs developed+barren habitat types (remove habitat)
@@ -282,7 +283,7 @@ row.names(df.sp)<-row.names(df.sp.p)<-sp_list
 
 for (i in length(models)) {
 
-  coefs <- round(models[[5]][["coefficients"]],3)
+  coefs <- round(models[[5]][["coefficients"]],3)#need to input models manually
   coefs <- coefs[names(coefs)%in%sp_list]
   df.sp[[5]]<-coefs
   

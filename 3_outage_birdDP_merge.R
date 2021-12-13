@@ -5,6 +5,7 @@ library(tidyverse)
 
 load("Objects and Data/3_DP_predictions.rda")
 load("Objects and Data/0_MA_town_shapefiles.rda")
+ma_towns<-ma_towns[!duplicated(ma_towns$city),]
 load("Objects and Data/0_species_list.rda")
 outs<-read.csv("Objects and Data/MA_SAIDI.csv")
 
@@ -36,18 +37,21 @@ outs2<- outs%>%
   group_by(actual_city_town,week,year)%>%
   
   #d) aggregate SAIDI per town/week
-  summarize(saidi=sum(saidi,na.rm=T))%>%
+  summarize(saidi=sum(saidi,na.rm=T),
+            log_saidi=log(saidi))%>%
   ungroup()
   
-#3. Remove any outliers of SAIDI
-  #outliers defined as greater than 3 SDs from the mean
-  outs3<-outs2%>%
-   mutate(zscore=(saidi - mean(saidi))/sd(saidi))%>%
-   filter(zscore<3)
-    
+#3. Remove any outliers of log(SAIDI)
+  
+  #outliers defined as outside 1.5(iqr)
+  Q <- quantile(outs2$log_saidi, probs=c(.25, .75), na.rm = FALSE)
+  iqr<-IQR(outs2$log_saidi)
+  
+  outs3<- subset(outs2, outs2$log_saidi > (Q[1] - 1.5*iqr) & outs2$log_saidi < (Q[2]+1.5*iqr))  
+  
   #how many records are removed as outliers
   length(outs2$saidi)-length(outs3$saidi)
-  #check distribution of ncoh after outliers are removed
+  #check distribution of SAIDI after log(SAIDI) outliers are removed
   hist(outs3$saidi)
 
 #4. Create one bird dataset with each species as a variable
@@ -86,7 +90,8 @@ outs2<- outs%>%
     #Name them as their species codes
   colnames(dp_towns)<-colnames
     #column bind species DPs with time-town variables
-  dp_towns3<-bind_cols(dp_towns2,dp_towns)
+  dp_towns3<-bind_cols(dp_towns2,dp_towns)%>%
+    filter(Year>=2013)
 
 
 
@@ -95,7 +100,7 @@ outs2<- outs%>%
 dp_outs_towns<-left_join(outs3,dp_towns3, by=c("actual_city_town"="city",
                                                "year"="Year",
                                                "week"="week"))%>%
-  dplyr::select(-c("elevation_median","elevation_sd","zscore"))
+  dplyr::select(-c("elevation_median","elevation_sd"))
 
 
 #write final dataset to files
