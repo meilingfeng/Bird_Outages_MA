@@ -52,7 +52,7 @@ outs2<- outs%>%
   #how many records are removed as outliers
   length(outs2$saidi)-length(outs3$saidi)
   #check distribution of SAIDI after log(SAIDI) outliers are removed
-  hist(outs3$saidi)
+  hist(outs2$saidi)
 
 #4. Create one bird dataset with each species as a variable
   #a) First create a "season" field 
@@ -107,5 +107,5 @@ dp_outs_towns<-left_join(outs3,dp_towns3, by=c("actual_city_town"="city",
 write.csv(dp_outs_towns,"Outputs/dp_out_towns.csv",row.names = F)
 
 save(dp_outs_towns, file = "Objects and Data/4_dp_outs_towns.rda")
-
+save(dp_towns3, file = "Objects and Data/4_dp_towns.rda")
 
