@@ -1,12 +1,12 @@
 library(tidyverse)
 library(factoextra)
 
-load("Objects and Data/4_dp_outs_towns.rda")
+load("Objects and Data/4_dp_towns.rda")
 load("Objects and Data/0_species_list.rda")
 
 #Principle component analysis (bird activity dimension reduction)
 #----------------------------------------------------------------------------------------
-pr.all<-dp_outs_towns[complete.cases(dp_outs_towns), ]  
+pr.all<-dp_towns3[complete.cases(dp_towns3), ]  
 
 #run PCA on just bird DPs, scaling bases the PCs on correlation
 pr.out.all=prcomp(pr.all[,toupper(name_list$sp_file)], scale=TRUE)
@@ -18,7 +18,7 @@ write.csv(vectors,"Outputs/BirdDP_pcloadings.csv")
 
 
 #Percent contribution of variance of PCAs
-perc.all <- (pr.out.all$sdev^2/sum(pr.out.all.outages$sdev^2))
+perc.all <- (pr.out.all$sdev^2/sum(pr.out.all$sdev^2))
 
 df.all <- data.frame(pc = c('1','2','3','4','5-15'), 
                       perc = c(perc.all[1:4],
@@ -40,7 +40,7 @@ ggplot(df.all)+
 
 #Extract PC variables
 pr.ind <- get_pca_ind(pr.out.all)
-coord<-merge(pr.all[,c("actual_city_town","year","season","week","saidi","date")],pr.ind$coord,by=0,all.x=TRUE)%>% # Coordinates
+coord<-merge(pr.all[,c("city","Year","season","week","date")],pr.ind$coord,by=0,all.x=TRUE)%>% # Coordinates
   select(-c("Row.names"))
 write.csv(coord, "Outputs/BirdDP_pcvalues.csv",row.names = FALSE)
 
