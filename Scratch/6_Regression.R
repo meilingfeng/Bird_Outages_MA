@@ -3,8 +3,12 @@ library(ggcorrplot)
 library(AICcmodavg)
 library(regclass)
 library(sf)
+library(pscl) #Zero inflation model
+library(DescTools)#To calculate pseudo R2
+library(AER)#checks zero inflation
 
 #load outage and bird data
+
 #---------------------------------------------------------------------------------------------
 #SAIDI
 dp<-read.csv("Outputs/dp_out_towns.csv")%>%
@@ -440,3 +444,92 @@ ggsave("Figures/model_comparisons.jpeg",
        height = 8,
        dpi = 300,
        units = "in")
+
+
+#-------------------------------------------------------------------------------------------------------
+#Use outage count instead of SAIDI, zero fill missing records
+#-------------------------------------------------------------------------------------------------
+#Model outage count with species DPs, habitat, and time
+
+#First select the best modeling method:
+#zero-inflated poisson because we include zero-filled outage counts (Maliszewski et al, Liu et al)
+#OLS
+#Normal Poisson regression
+#Negative binomial regression
+
+zi<-pscl::zeroinfl(nouts~TUVU+(MODO*month)+(MODO*Forest)+(HOSP*month)+OSPR+(RTHA*Forest)+
+                     (RWBL*month)+(PIWO*Forest)+(HAWO*month)+NOFL+(EUST*Forest)+Year+
+                     Barren_Land, data=dp,dist = c("poisson"))
+nb<-pscl::zeroinfl(nouts~TUVU+(MODO*month)+(MODO*Forest)+(HOSP*month)+OSPR+(RTHA*Forest)+
+                     (RWBL*month)+(PIWO*Forest)+(HAWO*month)+NOFL+(EUST*Forest)+Year+
+                     Barren_Land, data=dp,dist = c("negbin"))
+p<-glm(nouts~TUVU+(MODO*month)+(MODO*Forest)+(HOSP*month)+OSPR+(RTHA*Forest)+
+         (RWBL*month)+(PIWO*Forest)+(HAWO*month)+NOFL+(EUST*Forest)+Year+
+         Barren_Land, data=dp, family = "poisson")
+ols<-lm(nouts~TUVU+(MODO*month)+(MODO*Forest)+(HOSP*month)+OSPR+(RTHA*Forest)+
+          (RWBL*month)+(PIWO*Forest)+(HAWO*month)+NOFL+(EUST*Forest)+Year+
+          Barren_Land, data=dp)
+
+#Test for over/under dispersion
+deviance(p)/p$df.residual
+dispersiontest(p)
+#Test for zero inflation
+AIC(p, zi)
+
+#Use pseudo R2, AIC, and ChiSq to compare models
+models <- list(m.s, m.t, m.h, m.st, m.sh, m.sth,
+               m.th)
+
+mod.names <- c('Zero.Inflated','Negative.Binomial','Poisson','OLS')
+
+aic<-aictab(cand.set = models, modnames = mod.names)
+
+#Compare model performance in a table
+df<-as.data.frame(matrix(ncol = 5 , nrow= 7))
+colnames(df)<- c("Model","Pseudo.R.Squared","Chisq","Chisq.P")
+df$Model<-mod.names
+#Pseudo R2
+df$Pseudo.R.Squared<-lapply(models, DescTools::PseudoR2, which="all")
+#Inspect goodness-of-fit (likelihood ratio statistics vs. a null model or similar):
+df$Chisq<-lapply(models, anova, test="Chisq")
+#Test significance of each model using chi-squared
+dfs<-vector()
+for (i in 1:length(models)) {
+  dfs[i]<-length(coef(models[[i]]))-1
+}
+df$ChiSq.P<-mapply(function (m,dfs) {
+  mnull <- update(m, . ~ 1)
+  pchisq(2 * (logLik(m) - logLik(mnull)), df = dfs, lower.tail = FALSE)
+},
+models,dfs)
+
+
+df<-left_join(df,as.data.frame(aic)%>%dplyr::select(Modnames,Delta_AICc),
+              by=c("Model"="Modnames"))
+df<-df%>%
+  mutate(across(-c("Model"), round, 4))%>%
+  rename(Delta.AIC=Delta_AICc)%>%
+  arrange(Delta.AIC)
+
+#plot residuals (raw, deviance, or scaled)
+#on the y-axis vs. the (log) predicted values, normal distribution is not expected for poisson.
+res <- residuals(mod1, type="deviance")
+plot(log(predict(mod1)), res)
+abline(h=0, lty=2)
+qqnorm(res)
+qqline(res)
+
+m.sth<-zeroinfl(nouts~TUVU+(MODO*month)+(MODO*Forest)+(HOSP*month)+OSPR+(RTHA*Forest)+
+                  (RWBL*month)+(PIWO*Forest)+(HAWO*month)+NOFL+(EUST*Forest)+Year+
+                  Barren_Land, data=dp)
+
+m.sth<-glm(nouts~TUVU+(MODO*month)+(MODO*Forest)+(HOSP*month)+OSPR+(RTHA*Forest)+
+             (RWBL*month)+(PIWO*Forest)+(HAWO*month)+NOFL+(EUST*Forest)+year+
+             Barren_Land, family="poisson", data=dp)
+
+
+#--------------------------------------------------------------------------------------------------------
+#Use outage occurrence 
+m.sth<-glm(outage~TUVU+(MODO*month)+(MODO*Forest)+(HOSP*month)+OSPR+(RTHA*Forest)+
+             (RWBL*month)+(PIWO*Forest)+(HAWO*month)+NOFL+(EUST*Forest)+Year+
+             Barren_Land, family="binomial", data=dp)

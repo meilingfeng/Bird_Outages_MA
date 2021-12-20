@@ -37,7 +37,8 @@ outs2<- outs%>%
   group_by(actual_city_town,week,year)%>%
   
   #d) aggregate SAIDI per town/week
-  summarize(saidi=sum(saidi,na.rm=T))%>%
+  summarize(saidi=sum(saidi,na.rm=T),
+            nouts=n())%>%
   ungroup()
   
 #3. Remove any outliers of SAIDI
@@ -93,7 +94,7 @@ outs2<- outs%>%
 
 #Merge bird and outage data into one dataset
 #------------------------------------------------------------------------------------------
-dp_outs_towns<-left_join(outs3,dp_towns3, by=c("actual_city_town"="city",
+dp_outs_towns<-left_join(outs3,dp_towns2, by=c("actual_city_town"="city",
                                                "year"="Year",
                                                "week"="week"))%>%
   dplyr::select(-c("elevation_median","elevation_sd","zscore"))
@@ -104,7 +105,16 @@ write.csv(dp_outs_towns,"Outputs/dp_out_towns.csv",row.names = F)
 
 save(dp_outs_towns, file = "Objects and Data/4_dp_outs_towns.rda")
 
-
+#Turn outages into binary presence/absence
+#retain only towns with at least 1 outage record. 
+#use all weeks for those towns, filling missing weeks with 0
+dp_towns4<-dp_towns3%>%filter(city%in%outs2$actual_city_town)
+dp_outs_towns<-left_join(dp_towns4,outs2, by=c("city"="actual_city_town",
+                                               "Year"="year",
+                                               "week"="week"))%>%
+  dplyr::select(-c("elevation_median","elevation_sd"))%>%
+  mutate(outage=case_when(!is.na(nouts)~1,
+                          is.na(nouts)~0))
 
 #-----------------------------  
 #Data exploration figures 
