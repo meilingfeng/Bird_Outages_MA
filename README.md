@@ -12,4 +12,4 @@ Additional environmental data needed for the analysis in 1_Habitat_Data_Preparat
 To run the analysis and generate figures, download Bird_Outages_MA, unzip all files, create a new R project in the Bird_Outages_MA folder, and run the 0_Main.R script. 0_Main.R sources the scripts for each part of the analysis and figure generation.
 
 Please cite the outage data, bird data, and figures generated in this analysis as the following:
-Feng, M.-L.E., Owolabi, O.O., Schafer, L.J., Sengupta, S., Wang, L., Matteson, D.S., Che-Castaldo, J.P., and Sunter, D.A. 2021. Informing data-driven analyses of animal-related electric outages using species distribution models and community science data [Manuscript Submitted for Publication]. 
+Feng, M.-L.E., Owolabi, O.O., Schafer, L.J., Sengupta, S., Wang, L., Matteson, D.S., Che-Castaldo, J.P., and Sunter, D.A. 2021. Analysis of animal-related electric outages using species distribution models and community science data [Manuscript Submitted for Publication]. 
